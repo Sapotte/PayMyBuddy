@@ -5,9 +5,7 @@ import com.paymybuddy.services.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +18,10 @@ public class UsersController {
     @Autowired
     UsersService usersService;
 
+    /** Create a user's account if the account doesn't exist
+     * @param user contains info to creat an account
+     * @return responseEntity
+     */
     @PostMapping
     @Operation(summary = "Create an account",
             description = "Add a new user")
