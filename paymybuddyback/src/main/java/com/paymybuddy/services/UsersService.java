@@ -28,7 +28,7 @@ public class UsersService {
     }
 
     /** Method to check if an account has already been created with this email
-     * @param email
+     * @param email, id user
      * @return true if account is already registered
      */
     private boolean checkIfEmailExists(String email) {
