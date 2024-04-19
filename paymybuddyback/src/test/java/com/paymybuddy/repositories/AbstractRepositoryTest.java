@@ -5,63 +5,66 @@ import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-IC.yml")
 public class AbstractRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @PostConstruct
     public void init() {
-        jdbcTemplate.execute("CREATE TABLE users(\n" +
-                "        id              Int  Auto_increment  NOT NULL ,\n" +
-                "        password        Varchar (20) NOT NULL ,\n" +
-                "        first_name      Varchar (50) NOT NULL ,\n" +
-                "        last_name       Varchar (100) NOT NULL ,\n" +
-                "        account_balance Float NOT NULL ,\n" +
-                "        email           Varchar (150) NOT NULL\n" +
-                "\t,CONSTRAINT users_AK UNIQUE (email)\n" +
-                "\t,CONSTRAINT users_PK PRIMARY KEY (id)\n" +
-                ")ENGINE=InnoDB;");
-        jdbcTemplate.execute("CREATE TABLE extern_transactions(\n" +
-                "        id       Int  Auto_increment  NOT NULL ,\n" +
-                "        account  Varchar (50) NOT NULL ,\n" +
-                "        date     Date NOT NULL ,\n" +
-                "        type     Varchar (2) NOT NULL ,\n" +
-                "        amount   Float NOT NULL ,\n" +
-                "        id_users Int NOT NULL\n" +
-                "\t,CONSTRAINT extern_transactions_PK PRIMARY KEY (id)\n" +
-                "\n" +
-                "\t,CONSTRAINT extern_transactions_users_FK FOREIGN KEY (id_users) REFERENCES users(id)\n" +
-                ")ENGINE=InnoDB;");
-        jdbcTemplate.execute("CREATE TABLE friendships(\n" +
-                "                            id         Int  Auto_increment  NOT NULL ,\n" +
-                "                            user1      Int NOT NULL ,\n" +
-                "                            user2      Int NOT NULL ,\n" +
-                "                            id_users   Int NOT NULL ,\n" +
-                "                            id_2_users Int NOT NULL\n" +
-                "    ,CONSTRAINT friendships_PK PRIMARY KEY (id)\n" +
-                "\n" +
-                "    ,CONSTRAINT friendships_users_FK FOREIGN KEY (id_users) REFERENCES users(id)\n" +
-                "    ,CONSTRAINT friendships_users_2_FK FOREIGN KEY (id_2_users) REFERENCES users(id)\n" +
-                ")ENGINE=InnoDB;");
-        jdbcTemplate.execute("CREATE TABLE intern_transactions(\n" +
-                "        id             Int  Auto_increment  NOT NULL ,\n" +
-                "        date           Date NOT NULL ,\n" +
-                "        status         Varchar (2) NOT NULL ,\n" +
-                "        amount         Decimal (5,2) NOT NULL ,\n" +
-                "        label          Varchar (350) NOT NULL ,\n" +
-                "        sender_id      Int NOT NULL ,\n" +
-                "        id_friendships Int NOT NULL\n" +
-                "\t,CONSTRAINT intern_transactions_PK PRIMARY KEY (id)\n" +
-                "\n" +
-                "\t,CONSTRAINT intern_transactions_friendships_FK FOREIGN KEY (id_friendships) REFERENCES friendships(id)\n" +
-                ")ENGINE=InnoDB;");
+        jdbcTemplate.execute("""
+                CREATE TABLE users(
+                        id              Int  Auto_increment  NOT NULL ,
+                        password        Varchar (20) NOT NULL ,
+                        first_name      Varchar (50) NOT NULL ,
+                        last_name       Varchar (100) NOT NULL ,
+                        account_balance Float NOT NULL ,
+                        email           Varchar (150) NOT NULL
+                \t,CONSTRAINT users_AK UNIQUE (email)
+                \t,CONSTRAINT users_PK PRIMARY KEY (id)
+                )ENGINE=InnoDB;""");
+        jdbcTemplate.execute("""
+                CREATE TABLE extern_transactions(
+                        id       Int  Auto_increment  NOT NULL ,
+                        account  Varchar (50) NOT NULL ,
+                        date     Date NOT NULL ,
+                        type     Varchar (2) NOT NULL ,
+                        amount   Float NOT NULL ,
+                        id_users Int NOT NULL
+                \t,CONSTRAINT extern_transactions_PK PRIMARY KEY (id)
+
+                \t,CONSTRAINT extern_transactions_users_FK FOREIGN KEY (id_users) REFERENCES users(id)
+                )ENGINE=InnoDB;""");
+        jdbcTemplate.execute("""
+                CREATE TABLE friendships(
+                                            id         Int  Auto_increment  NOT NULL ,
+                                            user1      Int NOT NULL ,
+                                            user2      Int NOT NULL ,
+                                            id_users   Int NOT NULL ,
+                                            id_2_users Int NOT NULL
+                    ,CONSTRAINT friendships_PK PRIMARY KEY (id)
+
+                    ,CONSTRAINT friendships_users_FK FOREIGN KEY (id_users) REFERENCES users(id)
+                    ,CONSTRAINT friendships_users_2_FK FOREIGN KEY (id_2_users) REFERENCES users(id)
+                )ENGINE=InnoDB;""");
+        jdbcTemplate.execute("""
+                CREATE TABLE intern_transactions(
+                        id             Int  Auto_increment  NOT NULL ,
+                        date           Date NOT NULL ,
+                        status         Varchar (2) NOT NULL ,
+                        amount         Decimal (5,2) NOT NULL ,
+                        label          Varchar (350) NOT NULL ,
+                        sender_id      Int NOT NULL ,
+                        id_friendships Int NOT NULL
+                \t,CONSTRAINT intern_transactions_PK PRIMARY KEY (id)
+
+                \t,CONSTRAINT intern_transactions_friendships_FK FOREIGN KEY (id_friendships) REFERENCES friendships(id)
+                )ENGINE=InnoDB;""");
     }
 
     @PreDestroy
